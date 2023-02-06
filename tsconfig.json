@@ -6,7 +6,7 @@
       "allowJs": false,
       "skipLibCheck": true,
       "esModuleInterop": false,
-      "allowSyntheticDefaultImports": true,
+      "allowSyntheticDefaultImports": true, // default export가 없는 모듈에서 default imports를 허용
       "strict": true,
       "forceConsistentCasingInFileNames": true,
       "module": "ESNext",
@@ -26,7 +26,8 @@
       "preserveConstEnums": true,
       "suppressImplicitAnyIndexErrors": true,
       "checkJs": false,
-      "sourceMap": true
+      "sourceMap": true,
+      "baseUrl": "."
 
       //"noImplicitUseStrict":false target이 es6 미만인 경우만 필요
    },
