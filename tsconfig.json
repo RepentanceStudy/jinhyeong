@@ -1,0 +1,35 @@
+{
+   "compilerOptions": {
+      "target": "es6",
+      "useDefineForClassFields": true,
+      "lib": ["DOM", "DOM.Iterable", "ESNext"],
+      "allowJs": false,
+      "skipLibCheck": true,
+      "esModuleInterop": false,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true,
+      "jsx": "react-jsx",
+      //custom
+      "noImplicitAny": true, //any type 허용
+      "noUnusedParameters": true, //사용하지 않는 파라미터 체크
+      "noUnusedLocals": true, //사용하지 않는 지역변수 체크
+      "removeComments": true, //컴파일시 주석 제거
+      "noImplicitReturns": true, // return문 없는 경우 에러내기
+      "noFallthroughCasesInSwitch": true, // switch에서 break 사용하지 않으면 에러
+      "noLib": false,
+      "preserveConstEnums": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "checkJs": false,
+      "sourceMap": true
+
+      //"noImplicitUseStrict":false target이 es6 미만인 경우만 필요
+   },
+   "include": ["src"],
+   "references": [{ "path": "./tsconfig.node.json" }]
+}
