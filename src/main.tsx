@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 //Compoents
 import App from './App';
+import { AuthProvider } from './contexts/AuthContext';
 
 const queryClient = new QueryClient();
 
@@ -14,10 +15,12 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLDivEleme
 
 root.render(
    <ReduxProvider store={store}>
-      <QueryClientProvider client={queryClient}>
-         <BrowserRouter>
-            <App />
-         </BrowserRouter>
-      </QueryClientProvider>
+      <AuthProvider>
+         <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+               <App />
+            </BrowserRouter>
+         </QueryClientProvider>
+      </AuthProvider>
    </ReduxProvider>,
 );

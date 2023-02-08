@@ -1,19 +1,41 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { CircularProgress } from '@mui/material';
+import { ReactNode, useEffect, useState } from 'react';
 
-export default function AuthGuard({ children }: { children: JSX.Element }) {
-   // let auth = useAuth();
-   const auth = {
-      user: null,
-   };
-   const location = useLocation();
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
-   //    if (!auth.user) {
-   //       // Redirect them to the /login page, but save the current location they were
-   //       // trying to go to when they were redirected. This allows us to send them
-   //       // along to that page after they login, which is a nicer user experience
-   //       // than dropping them off on the home page.
-   //       return <Navigate to="/login" state={{ from: location }} replace />;
-   //    }
+type Props = {
+   children: ReactNode;
+};
 
-   return children;
+export default function AuthGuard({ children }: Props) {
+   const { isAuthenticated, isInitialized } = useAuth();
+
+   const push = useNavigate();
+   const { pathname } = useLocation();
+
+   const [requestedLocation, setRequestedLocation] = useState<string | null>(null);
+
+   useEffect(() => {
+      if (requestedLocation && pathname !== requestedLocation) {
+         push(requestedLocation);
+      }
+      if (isAuthenticated) {
+         setRequestedLocation(null);
+      }
+   }, [isAuthenticated, pathname, push, requestedLocation]);
+
+   if (!isInitialized) {
+      return <CircularProgress />;
+   }
+
+   if (!isAuthenticated) {
+      if (pathname !== requestedLocation) {
+         setRequestedLocation(pathname);
+      }
+      return <Navigate to="/login" replace />;
+   }
+
+   return <>{children}</>;
 }

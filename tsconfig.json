@@ -27,10 +27,9 @@
       "suppressImplicitAnyIndexErrors": true,
       "checkJs": false,
       "sourceMap": true,
-      "baseUrl": "."
-
+      "plugins": [{ "name": "typescript-plugin-css-modules", "jumpToDefinition": true }]
       //"noImplicitUseStrict":false target이 es6 미만인 경우만 필요
    },
-   "include": ["src"],
+   "include": ["src", "src/styles/*.*.sass", "src/styles/*.*.css"],
    "references": [{ "path": "./tsconfig.node.json" }]
 }
