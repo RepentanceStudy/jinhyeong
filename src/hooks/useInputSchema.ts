@@ -1,41 +1,53 @@
 import { useState } from 'react';
 import { FormSchema } from '../types/form';
 
-type ErrorState = {
-   [x: string]: { message: string | null; isError: boolean };
-};
 type Form = {
-   [x: string]: string;
+   [name: string]: {
+      value: string;
+      error: string | null;
+   };
 };
 type useInputSchemaReturn = {
    form: Form;
-   getForm: () => Form;
-   error: ErrorState | null;
+   isFormValid: boolean;
    handleOnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
-const useInputSchema = (initform: Record<string, string | boolean>, formSchema: FormSchema): useInputSchemaReturn => {
-   const [form, setForm] = useState(initform);
-   const [error, setError] = useState<ErrorState | null>(null);
+const useInputSchema = (formSchema: FormSchema): useInputSchemaReturn => {
+   const initForm = Object.keys(formSchema).reduce((acc, input) => {
+      acc = {
+         ...acc,
+         [input]: {
+            value: formSchema[input].value,
+            error: formSchema[input].error,
+         },
+      };
+      return acc;
+   }, {});
+
+   const [form, setForm] = useState<Form>(initForm);
+   const [isFormValid, setIsFormValid] = useState(false);
 
    const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
-      setForm({
-         ...form,
-         [name]: value,
-      });
+      const errorMessage = formSchema[name].validate(value);
 
-      const validationMessage = formSchema[name].validate(value);
-      setError(prevState => {
-         return {
-            ...prevState,
-            [name]: { message: validationMessage, isError: validationMessage == null ? false : true },
-         };
-      });
+      const changedForm = {
+         ...form,
+         [name]: { value: value, error: errorMessage },
+      };
+
+      setForm(changedForm);
+      _isFormValid(changedForm);
    };
-   const getForm = () => {
-      return form;
+
+   const _isFormValid = (nextForm: Form): void => {
+      const formValues = Object.values(nextForm);
+      const hasErrors = formValues.some(data => data.error !== null);
+
+      setIsFormValid(!hasErrors);
    };
-   return { form, error, handleOnChange, getForm };
+
+   return { form, handleOnChange, isFormValid };
 };
 
 export default useInputSchema;

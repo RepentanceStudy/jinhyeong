@@ -1,39 +1,46 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Container, Stack } from '@mui/material';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Button, Container, Stack } from '@mui/material';
 import FormInput from '../../components/Form/FormInput';
-import useAuth from '../../hooks/useAuth';
-import { PATH_AUTH } from '../../routes';
+import useInputSchema from '../../hooks/useInputSchema';
 import { ContentStyle, From } from '../../styles/form';
 import { FormSchema, INPUT_TYPE } from '../../types/form';
+import useAuth from '../../hooks/useAuth';
 
 export default function Login() {
    const { login } = useAuth();
-   const [form, setForm] = useState({
-      email: '',
-      password: '',
-   });
-   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setForm({
-         ...form,
-         [name]: value,
-      });
+
+   const loginShcema: FormSchema = {
+      email: {
+         value: '',
+         validate: (value: string) => {
+            if (!value) {
+               return '입력이 필요합니다.';
+            }
+            if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value)) {
+               return '올바른 형식이 아닙니다.';
+            }
+            return null;
+         },
+      },
+      password: {
+         value: '',
+         validate: (value: string) => {
+            if (!value) {
+               return '입력이 필요합니다.';
+            }
+
+            return null;
+         },
+      },
    };
+   const { form, handleOnChange, isFormValid } = useInputSchema(loginShcema);
 
    const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       try {
          e.preventDefault();
-         await login(form.email, form.password);
+         await login(form.email.value, form.password.value);
       } catch (error) {
          console.error(error);
-
-         // reset();
-
-         // if (isMountedRef.current) {
-         //    setError('afterSubmit', { ...error, message: error.message });
-         // }
       }
    };
    return (

@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Container, Stack } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import FormInput from '../../components/Form/FormInput';
 import useAuth from '../../hooks/useAuth';
 import useInputSchema from '../../hooks/useInputSchema';
@@ -15,6 +15,7 @@ export default function Register() {
 
    const RegisterShcema: FormSchema = {
       email: {
+         value: '',
          validate: (value: string) => {
             if (!value) {
                return '입력이 필요합니다.';
@@ -26,6 +27,7 @@ export default function Register() {
          },
       },
       password: {
+         value: '',
          validate: (value: string) => {
             if (!value) {
                return '입력이 필요합니다.';
@@ -37,6 +39,7 @@ export default function Register() {
          },
       },
       confirmPassword: {
+         value: '',
          validate: (confirmPasswordValue: string) => {
             if (!confirmPasswordValue) {
                return '입력이 필요합니다.';
@@ -50,21 +53,13 @@ export default function Register() {
       },
    };
 
-   const useform = useInputSchema(
-      {
-         email: '',
-         password: '',
-         confirmPassword: '',
-      },
-      RegisterShcema,
-   );
+   const { form, handleOnChange, isFormValid } = useInputSchema(RegisterShcema);
 
    const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       try {
          e.preventDefault();
-         const form = useform.getForm();
 
-         await register(form['password'], form['password']);
+         await register(form.email.value, form.password.value);
       } catch (error) {
          console.error(error);
       }
@@ -76,37 +71,37 @@ export default function Register() {
             <Stack direction="column" alignItems="center" sx={{ mb: 2 }}>
                <From onSubmit={handleOnSubmit}>
                   <FormInput
-                     onChange={useform.handleOnChange}
+                     onChange={handleOnChange}
                      name={'email'}
                      label="아이디"
-                     error={useform.error?.['email']?.isError}
-                     helperText={useform.error?.['email']?.message}
+                     error={!!form.email?.error}
+                     helperText={form.email?.error}
                      type={INPUT_TYPE.TEXT}
                      sx={{ mb: 3 }}
                      fullWidth
                   />
                   <FormInput
-                     onChange={useform.handleOnChange}
+                     onChange={handleOnChange}
                      inputRef={inputRef}
                      name={'password'}
                      label="비밀번호"
-                     error={useform.error?.['password']?.isError}
-                     helperText={useform.error?.['password']?.message}
+                     error={!!form.password?.error}
+                     helperText={form.password?.error}
                      type={INPUT_TYPE.PAWSSWORD}
                      sx={{ mb: 3 }}
                      fullWidth
                   />
                   <FormInput
-                     onChange={useform.handleOnChange}
+                     onChange={handleOnChange}
                      name={'confirmPassword'}
                      label="비밀번호 확인"
-                     error={useform.error?.['confirmPassword']?.isError}
-                     helperText={useform.error?.['confirmPassword']?.message}
+                     error={!!form.confirmPassword?.error}
+                     helperText={form.confirmPassword?.error}
                      type={INPUT_TYPE.PAWSSWORD}
                      sx={{ mb: 3 }}
                      fullWidth
                   />
-                  <LoadingButton disabled={false} fullWidth type="submit" variant="contained" loading={false}>
+                  <LoadingButton disabled={!isFormValid} fullWidth type="submit" variant="contained" loading={false}>
                      Sign up
                   </LoadingButton>
                </From>
