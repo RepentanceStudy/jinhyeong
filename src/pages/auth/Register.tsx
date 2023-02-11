@@ -1,9 +1,9 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Container, Stack } from '@mui/material';
-import { useRef } from 'react';
+
 import FormInput from '../../components/Form/FormInput';
 import useAuth from '../../hooks/useAuth';
-import useInputSchema from '../../hooks/useInputSchema';
+import { useForm } from '../../hooks/useForm';
 
 import { ContentStyle, From } from '../../styles/form';
 import { FormSchema, INPUT_TYPE } from '../../types/form';
@@ -11,12 +11,10 @@ import { FormSchema, INPUT_TYPE } from '../../types/form';
 export default function Register() {
    const { register } = useAuth();
 
-   const inputRef = useRef<HTMLInputElement>(null);
-
    const RegisterShcema: FormSchema = {
       email: {
          value: '',
-         validate: (value: string) => {
+         validate: value => {
             if (!value) {
                return '입력이 필요합니다.';
             }
@@ -28,7 +26,7 @@ export default function Register() {
       },
       password: {
          value: '',
-         validate: (value: string) => {
+         validate: value => {
             if (!value) {
                return '입력이 필요합니다.';
             }
@@ -40,12 +38,13 @@ export default function Register() {
       },
       confirmPassword: {
          value: '',
-         validate: (confirmPasswordValue: string) => {
-            if (!confirmPasswordValue) {
+         validate: (value, formState) => {
+            const passwordValue = formState?.password.value;
+            if (!value) {
                return '입력이 필요합니다.';
             }
-            const passwordValue = inputRef.current!.value;
-            if (passwordValue !== confirmPasswordValue) {
+
+            if (value !== passwordValue) {
                return '비밀번호가 일치하지 않습니다.';
             }
             return null;
@@ -53,12 +52,11 @@ export default function Register() {
       },
    };
 
-   const { form, handleOnChange, isFormValid } = useInputSchema(RegisterShcema);
+   const { form, isFormValid, handleOnChange, handleOnSubmit } = useForm(RegisterShcema);
 
-   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       try {
          e.preventDefault();
-
          await register(form.email.value, form.password.value);
       } catch (error) {
          console.error(error);
@@ -69,7 +67,7 @@ export default function Register() {
       <Container>
          <ContentStyle>
             <Stack direction="column" alignItems="center" sx={{ mb: 2 }}>
-               <From onSubmit={handleOnSubmit}>
+               <From onSubmit={handleOnSubmit(onSubmit)}>
                   <FormInput
                      onChange={handleOnChange}
                      name={'email'}
@@ -82,7 +80,6 @@ export default function Register() {
                   />
                   <FormInput
                      onChange={handleOnChange}
-                     inputRef={inputRef}
                      name={'password'}
                      label="비밀번호"
                      error={!!form.password?.error}

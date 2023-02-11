@@ -3,13 +3,20 @@ export const INPUT_TYPE = {
    PAWSSWORD: 'password',
 } as const;
 
-type FormError = string | null;
+export type FormError = string | null | undefined;
+
+export type FormState = {
+   [name: string]: {
+      value: string;
+      error: FormError;
+   };
+};
 
 export type FormSchema = {
    [x: string]: {
       value: string;
-      validate: (value: string) => FormError;
-      onChange?: () => void;
       error?: FormError;
+      validate: (value: string, formState?: FormState | undefined) => FormError;
+      onChange?: () => void;
    };
 };

@@ -1,7 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Container, Stack } from '@mui/material';
 import FormInput from '../../components/Form/FormInput';
-import useInputSchema from '../../hooks/useInputSchema';
+import { useForm } from '../../hooks/useForm';
 import { ContentStyle, From } from '../../styles/form';
 import { FormSchema, INPUT_TYPE } from '../../types/form';
 import useAuth from '../../hooks/useAuth';
@@ -33,7 +33,7 @@ export default function Login() {
          },
       },
    };
-   const { form, handleOnChange, isFormValid } = useInputSchema(loginShcema);
+   const { form, handleOnChange, isFormValid } = useForm(loginShcema);
 
    const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       try {
