@@ -50,6 +50,8 @@ export default function Login() {
                <From onSubmit={handleOnSubmit}>
                   <FormInput
                      onChange={handleOnChange}
+                     error={!!form.email.error}
+                     helperText={form.email.error}
                      name={'email'}
                      label="아이디"
                      type={INPUT_TYPE.TEXT}
@@ -60,12 +62,20 @@ export default function Login() {
                      onChange={handleOnChange}
                      name={'password'}
                      label="비밀번호"
+                     error={!!form.password.error}
+                     helperText={form.password.error}
                      type={INPUT_TYPE.PAWSSWORD}
                      sx={{ mb: 3 }}
                      fullWidth
                   />
 
-                  <LoadingButton color="secondary" fullWidth type="submit" variant="contained" loading={false}>
+                  <LoadingButton
+                     disabled={!isFormValid}
+                     color="secondary"
+                     fullWidth
+                     type="submit"
+                     variant="contained"
+                     loading={false}>
                      Sign in
                   </LoadingButton>
                </From>
