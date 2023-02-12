@@ -5,6 +5,7 @@ import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../types/auth';
+import { PATH_AUTH } from '../routes';
 
 const LoginTypes = {
    Initial: 'INITIALIZE',
@@ -24,7 +25,7 @@ type JWTAuthPayload = {
    };
    [LoginTypes.Logout]: undefined;
    [LoginTypes.Register]: {
-      message: string;
+      user: AuthUser;
    };
 };
 
@@ -61,7 +62,7 @@ const JWTReducer = (state: AuthState, action: JWTActions) => {
          return {
             ...state,
             isAuthenticated: true,
-            message: '',
+            user: action.payload.user,
          };
 
       default:
@@ -85,14 +86,17 @@ function AuthProvider({ children }: AuthProviderProps) {
 
             if (accessToken && isValidToken(accessToken)) {
                setSession(accessToken);
-               const response = await axios.get('/api/account/my-account');
-               const { user } = response.data;
+
+               const [_header, payload] = accessToken.split('.');
+               const userEmail = window.atob(payload);
 
                dispatch({
                   type: LoginTypes.Initial,
                   payload: {
                      isAuthenticated: true,
-                     user,
+                     user: {
+                        email: userEmail,
+                     },
                   },
                });
             } else {
@@ -104,8 +108,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                   },
                });
             }
-         } catch (err) {
-            console.error(err);
+         } catch (error) {
             dispatch({
                type: LoginTypes.Initial,
                payload: {
@@ -127,7 +130,6 @@ function AuthProvider({ children }: AuthProviderProps) {
       const { token, message } = response.data;
 
       setSession(token);
-      alert(message);
 
       dispatch({
          type: LoginTypes.Login,
@@ -135,6 +137,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             user: { email },
          },
       });
+      alert(message);
    };
 
    const register = async (email: string, password: string) => {
@@ -144,20 +147,22 @@ function AuthProvider({ children }: AuthProviderProps) {
       });
 
       const { token, message } = response.data;
-      localStorage.setItem('accessToken', token);
+      localStorage.setItem('accessToken', JSON.stringify(token));
 
-      alert(message);
       dispatch({
          type: LoginTypes.Register,
          payload: {
-            message,
+            user: { email },
          },
       });
+      window.location.href = PATH_AUTH.root;
    };
 
    const logout = async () => {
       setSession(null);
       dispatch({ type: LoginTypes.Logout });
+      console.log('as');
+      window.location.href = PATH_AUTH.root;
    };
 
    return (

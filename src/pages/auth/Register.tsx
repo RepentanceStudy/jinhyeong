@@ -58,8 +58,8 @@ export default function Register() {
       try {
          e.preventDefault();
          await register(form.email.value, form.password.value);
-      } catch (error) {
-         console.error(error);
+      } catch (error: any) {
+         alert(error.details);
       }
    };
 

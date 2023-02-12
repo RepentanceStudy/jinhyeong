@@ -11,7 +11,6 @@ type Props = {
 
 export default function AuthGuard({ children }: Props) {
    const { isAuthenticated, isInitialized } = useAuth();
-
    const push = useNavigate();
    const { pathname } = useLocation();
 

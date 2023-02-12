@@ -1,18 +1,22 @@
 import jwtDecode from 'jwt-decode';
 // routes
 import { PATH_AUTH } from '../routes';
-//
 import axios from './axios';
 
 const isValidToken = (accessToken: string) => {
    if (!accessToken) {
       return false;
    }
-   const decoded = jwtDecode<{ exp: number }>(accessToken);
 
-   const currentTime = Date.now() / 1000;
+   const [_header, payload] = accessToken.split('.');
+   const payloadDecoded = window.atob(payload);
 
-   return decoded.exp > currentTime;
+   // const decoded = jwtDecode<{ exp: number }>(accessToken);
+
+   // const currentTime = Date.now() / 1000;
+
+   // return decoded.exp > currentTime;
+   return payloadDecoded;
 };
 
 const handleTokenExpired = (exp: number) => {
@@ -37,11 +41,12 @@ const handleTokenExpired = (exp: number) => {
 const setSession = (accessToken: string | null) => {
    try {
       if (accessToken) {
+         console.log(accessToken);
          localStorage.setItem('accessToken', accessToken);
          axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-         const { exp } = jwtDecode<{ exp: number }>(accessToken);
-         handleTokenExpired(exp);
+         // const { exp } = jwtDecode<{ exp: number }>(accessToken);
+         // handleTokenExpired(exp);
       } else {
          localStorage.removeItem('accessToken');
          delete axios.defaults.headers.common.Authorization;

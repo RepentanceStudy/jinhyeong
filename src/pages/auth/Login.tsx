@@ -5,6 +5,7 @@ import { useForm } from '../../hooks/useForm';
 import { ContentStyle, From } from '../../styles/form';
 import { FormSchema, INPUT_TYPE } from '../../types/form';
 import useAuth from '../../hooks/useAuth';
+import GuestGuard from '../../layouts/guards/GuestGuard';
 
 export default function Login() {
    const { login } = useAuth();
@@ -44,47 +45,49 @@ export default function Login() {
       }
    };
    return (
-      <Container>
-         <ContentStyle>
-            <Stack direction="column" alignItems="center" sx={{ mb: 2 }}>
-               <From onSubmit={handleOnSubmit}>
-                  <FormInput
-                     onChange={handleOnChange}
-                     error={!!form.email.error}
-                     helperText={form.email.error}
-                     name={'email'}
-                     label="아이디"
-                     type={INPUT_TYPE.TEXT}
-                     sx={{ mb: 3 }}
-                     fullWidth
-                  />
-                  <FormInput
-                     onChange={handleOnChange}
-                     name={'password'}
-                     label="비밀번호"
-                     error={!!form.password.error}
-                     helperText={form.password.error}
-                     type={INPUT_TYPE.PAWSSWORD}
-                     sx={{ mb: 3 }}
-                     fullWidth
-                  />
+      <GuestGuard>
+         <Container>
+            <ContentStyle>
+               <Stack direction="column" alignItems="center" sx={{ mb: 2 }}>
+                  <From onSubmit={handleOnSubmit}>
+                     <FormInput
+                        onChange={handleOnChange}
+                        error={!!form.email.error}
+                        helperText={form.email.error}
+                        name={'email'}
+                        label="아이디"
+                        type={INPUT_TYPE.TEXT}
+                        sx={{ mb: 3 }}
+                        fullWidth
+                     />
+                     <FormInput
+                        onChange={handleOnChange}
+                        name={'password'}
+                        label="비밀번호"
+                        error={!!form.password.error}
+                        helperText={form.password.error}
+                        type={INPUT_TYPE.PAWSSWORD}
+                        sx={{ mb: 3 }}
+                        fullWidth
+                     />
 
-                  <LoadingButton
-                     disabled={!isFormValid}
-                     color="secondary"
-                     fullWidth
-                     type="submit"
-                     variant="contained"
-                     loading={false}>
-                     Sign in
-                  </LoadingButton>
-               </From>
+                     <LoadingButton
+                        disabled={!isFormValid}
+                        color="secondary"
+                        fullWidth
+                        type="submit"
+                        variant="contained"
+                        loading={false}>
+                        Sign in
+                     </LoadingButton>
+                  </From>
 
-               <Button sx={{ mt: 3 }} fullWidth href="/register" variant="contained">
-                  Sign up
-               </Button>
-            </Stack>
-         </ContentStyle>
-      </Container>
+                  <Button sx={{ mt: 3 }} fullWidth href="/register" variant="contained">
+                     Sign up
+                  </Button>
+               </Stack>
+            </ContentStyle>
+         </Container>
+      </GuestGuard>
    );
 }

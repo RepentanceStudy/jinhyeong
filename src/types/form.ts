@@ -20,3 +20,7 @@ export type FormSchema = {
       onChange?: () => void;
    };
 };
+
+export type ResponseError = {
+   details: string;
+};
