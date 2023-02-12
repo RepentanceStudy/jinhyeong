@@ -8,19 +8,14 @@ const isValidToken = (accessToken: string) => {
       return false;
    }
 
-   const [_header, payload] = accessToken.split('.');
-   const payloadDecoded = window.atob(payload);
+   const decoded = jwtDecode<{ exp: number }>(accessToken);
 
-   // const decoded = jwtDecode<{ exp: number }>(accessToken);
+   const currentTime = Date.now() / 1000;
 
-   // const currentTime = Date.now() / 1000;
-
-   // return decoded.exp > currentTime;
-   return payloadDecoded;
+   return decoded.exp > currentTime;
 };
 
 const handleTokenExpired = (exp: number) => {
-   // eslint-disable-next-line prefer-const
    let expiredTimer;
 
    const currentTime = Date.now();
@@ -30,7 +25,7 @@ const handleTokenExpired = (exp: number) => {
    clearTimeout(expiredTimer);
 
    expiredTimer = setTimeout(() => {
-      alert('Token expired');
+      alert('로그인 시간이 만료되었습니다. 다시 로그인 해주세요.');
 
       localStorage.removeItem('accessToken');
 
@@ -41,12 +36,12 @@ const handleTokenExpired = (exp: number) => {
 const setSession = (accessToken: string | null) => {
    try {
       if (accessToken) {
-         console.log(accessToken);
-         localStorage.setItem('accessToken', accessToken);
-         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+         const token = updateTokenExp(accessToken);
+         localStorage.setItem('accessToken', token);
+         axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-         // const { exp } = jwtDecode<{ exp: number }>(accessToken);
-         // handleTokenExpired(exp);
+         const { exp } = jwtDecode<{ exp: number }>(token);
+         handleTokenExpired(exp);
       } else {
          localStorage.removeItem('accessToken');
          delete axios.defaults.headers.common.Authorization;
@@ -54,6 +49,21 @@ const setSession = (accessToken: string | null) => {
    } catch (error) {
       console.error(error);
    }
+};
+
+const updateTokenExp = (accessToken: string) => {
+   const [_header, payload] = accessToken.split('.');
+   const payloadDecoded = window.atob(payload);
+
+   const updatedPayload = {
+      data: payloadDecoded,
+      exp: Math.floor(Date.now() / 1000) + 20,
+   };
+   const updatedToken = [JSON.parse(window.atob(_header)), updatedPayload]
+      .map(part => window.btoa(JSON.stringify(part)))
+      .join('.');
+
+   return updatedToken;
 };
 
 export { isValidToken, setSession };

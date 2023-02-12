@@ -141,13 +141,10 @@ function AuthProvider({ children }: AuthProviderProps) {
    };
 
    const register = async (email: string, password: string) => {
-      const response = await axios.post('/users/create', {
+      await axios.post('/users/create', {
          email,
          password,
       });
-
-      const { token, message } = response.data;
-      localStorage.setItem('accessToken', JSON.stringify(token));
 
       dispatch({
          type: LoginTypes.Register,
